@@ -8,13 +8,13 @@
 --     Guy Eschemann   guy@noasic.com
 --
 --  Description:
---      UART Transmitter Model
+--      SPI Master Verification Component
 --
 --  Revision History:
 --    Date      Version    Description
 --    06/2022   2022.06    Initial version
 --
---  This file is part of OSVVM.
+--  This file is (not yet) part of OSVVM.
 --
 --  Copyright (c) 2022 Guy Escheman
 --

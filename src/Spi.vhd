@@ -101,8 +101,8 @@ begin
     begin
         ID           := NewID(MODEL_INSTANCE_NAME);
         ModelID      <= ID;
-        TransmitFifo <= NewID("TransmitFifo", ID, ReportMode => DISABLED, Search => PRIVATE);
-        ReceiveFifo  <= NewID("ReceiveFifo", ID, ReportMode => DISABLED, Search => PRIVATE);
+        TransmitFifo <= NewID("TransmitFifo", ID, ReportMode => DISABLED, Search => PRIVATE_NAME);
+        ReceiveFifo  <= NewID("ReceiveFifo", ID, ReportMode => DISABLED, Search => PRIVATE_NAME);
         wait;
     end process Initialize;
 
@@ -125,7 +125,7 @@ begin
         OptSclkPeriod      <= CheckSclkPeriod(ModelID, DEFAULT_SCLK_PERIOD, FALSE);
         OptCPOL            <= 0;
         OptCPHA            <= 0;
-        TransRec.BurstFifo <= NewID("BurstFifo", ModelID, Search => PRIVATE);
+        TransRec.BurstFifo <= NewID("BurstFifo", ModelID, Search => PRIVATE_NAME);
 
         TransactionDispatcherLoop : loop
             WaitForTransaction(

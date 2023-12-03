@@ -49,6 +49,7 @@ package SpiComponentPkg is
         port(
             TransRec : InOut SpiRecType;
             SCLK     : out   std_logic;
+            SS       : out   std_logic;     -- slave select (low active)
             MOSI     : out   std_logic;
             MISO     : in    std_logic
         );

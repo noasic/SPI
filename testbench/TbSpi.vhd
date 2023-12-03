@@ -74,6 +74,7 @@ architecture TestHarness of TbSpi is
     signal SCLK   : std_logic;
     signal MOSI   : std_logic;
     signal MISO   : std_logic;
+    signal SS     : std_logic;
 
 begin
 
@@ -103,6 +104,7 @@ begin
         port map(
             TransRec => SpiRec,
             SCLK     => SCLK,
+            SS       => SS,
             MOSI     => MOSI,
             MISO     => MISO
         );

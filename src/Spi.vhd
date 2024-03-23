@@ -12,6 +12,7 @@
 --
 --  Revision History:
 --    Date      Version    Description
+--    03/2024   2024.03    Updated SafeResize to use ModelID
 --    06/2022   2022.06    Initial version
 --
 --  This file is (not yet) part of OSVVM.
@@ -137,7 +138,7 @@ begin
             case Operation is
                 when SEND =>
                     Log(ModelID, "SEND", INFO);
-                    Data := SafeResize(TransRec.DataToModel, Data'length);
+                    Data := SafeResize(ModelID, TransRec.DataToModel, Data'length);
                     Last := '1';
                     Push(TransmitFifo, Last & Data);
                     Increment(TransmitRequestCount);

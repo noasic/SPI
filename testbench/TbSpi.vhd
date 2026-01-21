@@ -1,14 +1,14 @@
 --
 --  File Name:         TbSpi.vhd
 --  Design Unit Name:  TbSpi
---  OSVVM Release:     TODO
 --
---  Maintainer:        Guy Eschemann  email: guy@noasic.com
+--  Maintainer:        OSVVM Authors
 --  Contributor(s):
---     Guy Eschemann   guy@noasic.com
+--     Guy Eschemann   (original Author)
+--     Jacob Albers
 --
 --  Description:
---    SPI verification component testbench  
+--    SPI verification component testbench
 --
 --  Revision History:
 --    Date      Version    Description
@@ -17,6 +17,7 @@
 --  This file is part of OSVVM.
 --
 --  Copyright (c) 2022 Guy Escheman
+--  Copyright (c) 2024 OSVVM Authors
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -32,95 +33,105 @@
 --
 
 library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+    use ieee.std_logic_1164.all;
+    use ieee.numeric_std.all;
 
 use std.textio.all;
 
 library osvvm;
-context osvvm.OsvvmContext;
+    context osvvm.OsvvmContext;
 
 library osvvm_spi;
-context osvvm_spi.SpiContext;
+    context osvvm_spi.SpiContext;
 
 entity TbSpi is
 end TbSpi;
 
 architecture TestHarness of TbSpi is
+    -- Test Bench Constants
+    constant tperiod_Clk      : time := 10 ns;
+    constant tpd              : time :=  2 ns;
+    constant spi_mode         : SpiModeType := 0;
 
-    constant tperiod_Clk : time      := 10 ns;
-    constant tpd         : time      := 2 ns;
-    signal Clk           : std_logic := '0';
-    signal Reset         : std_logic;
+    -- Global Signals
+    signal Clk              : std_logic;
+    signal n_Reset          : std_logic;
 
-    -- SPI Interface
-    signal SerialData : std_logic;
+    -- Testbench Control Records
+    signal SpiControllerRec : SpiRecType;
+    signal SpiPeripheralRec : SpiRecType;
+
+    -- SPI Controller Signals
+    signal SCLK : std_logic;
+    signal CSEL : std_logic;
+    signal PICO : std_logic;
+    signal POCI : std_logic;
 
     component TestCtrl
-        generic(
-            tperiod_Clk : time := 10 ns
-        );
         port(
-            SpiRec : InOut SpiRecType;
-            Clk    : In    std_logic;
-            Reset  : In    std_logic;
-            SCLK   : in    std_logic;
-            MOSI   : in    std_logic;
-            MISO   : out   std_logic
+            SpiControllerRec : inout SpiRecType;
+            SpiPeripheralRec : inout SpiRecType;
+            Clk              : in    std_logic;
+            n_Reset          : in    std_logic
         );
     end component;
-
-    signal SpiRec : SpiRecType;
-    signal SCLK   : std_logic;
-    signal MOSI   : std_logic;
-    signal MISO   : std_logic;
 
 begin
 
     ------------------------------------------------------------
-    -- Create Clock 
+    -- Create Clock
     ------------------------------------------------------------
-    Osvvm.TbUtilPkg.CreateClock(
+    CreateClock(
         Clk    => Clk,
         Period => tperiod_Clk
     );
 
     ------------------------------------------------------------
-    -- Create Reset 
+    -- Create Reset
     ------------------------------------------------------------
-    Osvvm.TbUtilPkg.CreateReset(
-        Reset       => Reset,
-        ResetActive => '1',
+    CreateReset(
+        Reset       => n_Reset,
+        ResetActive => '0',
         Clk         => Clk,
         Period      => 7 * tperiod_Clk,
         tpd         => tpd
     );
 
     ------------------------------------------------------------
-    -- SPI
+    -- SPI Devices
     ------------------------------------------------------------
-    Spi_1 : Spi
+    SpiController_1 : SpiController
+        generic map(
+            SPI_MODE => spi_mode
+        )
         port map(
-            TransRec => SpiRec,
+            TransRec => SpiControllerRec,
             SCLK     => SCLK,
-            MOSI     => MOSI,
-            MISO     => MISO
+            CSEL     => CSEL,
+            PICO     => PICO,
+            POCI     => POCI
         );
 
+    SpiPeripheral_1 : SpiPeripheral
+        generic map(
+            SPI_MODE => spi_mode
+        )
+        port map(
+            TransRec => SpiPeripheralRec,
+            SCLK     => SCLK,
+            CSEL     => CSEL,
+            PICO     => PICO,
+            POCI     => POCI
+        );
     ------------------------------------------------------------
     -- Stimulus generation and synchronization
     ------------------------------------------------------------
     TestCtrl_1 : TestCtrl
-        generic map(
-            tperiod_Clk => tperiod_Clk
-        )
         port map(
-            SpiRec => SpiRec,
-            Clk    => Clk,
-            Reset  => Reset,
-            SCLK   => SCLK,
-            MOSI   => MOSI,
-            MISO   => MISO
+            SpiControllerRec => SpiControllerRec,
+            SpiPeripheralRec => SpiPeripheralRec,
+            Clk              => Clk,
+            n_Reset          => n_Reset
         );
 
 end TestHarness;

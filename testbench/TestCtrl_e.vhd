@@ -1,14 +1,14 @@
 --
 --  File Name:         TestCtrl_e.vhd
 --  Design Unit Name:  TestCtrl
---  OSVVM Release:     TODO
 --
---  Maintainer:        Guy Eschemann  email: guy@noasic.com
+--  Maintainer:        OSVVM Authors
 --  Contributor(s):
---     Guy Eschemann   guy@noasic.com
+--     Guy Eschemann   (original Author)
+--     Jacob Albers
 --
 --  Description:
---    Entity declaration for the SPI master verification component testbench controller  
+--    Test Sequencer for SPI testbench that tests SPI VC.
 --
 --  Revision History:
 --    Date      Version    Description
@@ -17,6 +17,7 @@
 --  This file is part of OSVVM.
 --
 --  Copyright (c) 2022 Guy Escheman
+--  Copyright (c) 2024 OSVVM Authors
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -32,31 +33,26 @@
 --
 
 library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-use ieee.numeric_std_unsigned.all;
-use std.textio.all;
+    use ieee.std_logic_1164.all;
+    use ieee.numeric_std.all;
+    use ieee.numeric_std_unsigned.all;
+    use std.textio.all;
 
 library OSVVM;
-context OSVVM.OsvvmContext;
+    context OSVVM.OsvvmContext;
 
 library osvvm_spi;
-context osvvm_spi.SpiContext;
+    context osvvm_spi.SpiContext;
 
 use work.OsvvmTestCommonPkg.all;
 
 entity TestCtrl is
-    generic(
-        tperiod_Clk : time := 10 ns
-    );
     port(
         -- Record Interface
-        SpiRec : inout SpiRecType;
-        Clk    : in    std_logic;
+        SpiControllerRec : inout SpiRecType;
+        SpiPeripheralRec : inout SpiRecType;
         -- Global Signal Interface
-        Reset  : in    std_logic;
-        SCLK   : in    std_logic;
-        MOSI   : in    std_logic;
-        MISO   : out   std_logic
+        Clk              : in    std_logic;
+        n_Reset          : in    std_logic
     );
 end entity;
